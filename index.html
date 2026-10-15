@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Candlee</title>
+<meta name="description" content="Make a personal birthday surprise in 10 languages, including Arabic, Moroccan Darija and Gulf Arabic. Add photos, favourite things and a cake they can blow out. Ready in under a minute.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&family=Lalezar&family=Lobster&family=Readex+Pro:wght@300;400;500;600;700&family=Shrikhand&family=ZCOOL+KuaiLe&display=swap">
+<style>
+/* Layout: pistachio-cake world. Rotating multilingual hero, then a two-column builder (form | live phone preview), then disclaimer and footer pages as dialogs. */
+:root{
+  --bg:#EAF4EE; --surface:#FFFFFF; --ink:#11352A; --muted:#4E6B60; --line:#CFE2D7;
+  --accent:#E8355E; --accent-ink:#FFFFFF; --gold:#D9982A; --soft:#DCEDE3;
+  --f-display:"Shrikhand", "Lalezar", Georgia, serif;
+  --f-ar:"Lalezar", "Readex Pro", Tahoma, sans-serif;
+  --f-body:"Readex Pro", system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0D1D18; --surface:#14291F; --ink:#E6F2EB; --muted:#9DB8AC; --line:#25443A;
+  --accent:#FF6F8A; --accent-ink:#2A0A12; --gold:#F0BB54; --soft:#183328; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0D1D18; --surface:#14291F; --ink:#E6F2EB; --muted:#9DB8AC; --line:#25443A;
+  --accent:#FF6F8A; --accent-ink:#2A0A12; --gold:#F0BB54; --soft:#183328; color-scheme:dark }
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+[hidden]{display:none!important}
+a{color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px}
+h1,h2,h3{text-wrap:balance;line-height:1.15;margin:0}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+
+/* Header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;font-size:1.15rem}
+.brand small{font-weight:500;color:var(--accent);font-size:.95rem}
+.nav{display:flex;gap:18px;align-items:center;font-size:.95rem}
+.nav a{text-decoration:none;color:var(--muted)} .nav a:hover{color:var(--ink)}
+@media (max-width:640px){.nav a.hide-sm{display:none}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:12px 22px;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap;transition:transform .15s, box-shadow .15s}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 18px -8px var(--accent)}
+.btn-primary:hover{box-shadow:0 10px 24px -8px var(--accent)}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--ink)}
+.btn-sm{padding:8px 14px;font-size:.88rem}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* Hero */
+.hero{padding-block:56px 40px}
+.hero-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:center}
+@media (max-width:880px){.hero-grid{grid-template-columns:1fr}}
+.rot{min-height:2.6em;display:flex;align-items:center;font-size:clamp(2.6rem,7.5vw,5.4rem);line-height:1.05;margin-block:10px 6px;color:var(--ink)}
+.rot span{display:inline-block;animation:pop .6s cubic-bezier(.2,.9,.3,1.3)}
+@keyframes pop{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
+.rot-meta{font-size:.9rem;color:var(--muted);min-height:1.5em}
+.hero p.lead{font-size:1.15rem;max-width:34em;color:var(--muted);margin:18px 0 26px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:12px}
+.ticker{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.ticker button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:.85rem;cursor:pointer}
+.ticker button.on{border-color:var(--accent);color:var(--accent)}
+.hero-art{position:relative;display:grid;place-items:center}
+.hero-art .bigcake{width:min(100%,380px)}
+
+/* Lang fonts */
+.lf-latin{font-family:"Shrikhand",Georgia,serif}
+.lf-ar{font-family:"Lalezar","Readex Pro",Tahoma,sans-serif}
+.lf-hi{font-family:"Baloo 2","Nirmala UI",sans-serif;font-weight:800}
+.lf-zh{font-family:"ZCOOL KuaiLe","Microsoft YaHei","PingFang SC",sans-serif}
+.lf-ru{font-family:"Lobster",Georgia,serif}
+
+/* Steps */
+.steps{padding-block:24px 8px}
+.steps ol{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+@media (max-width:760px){.steps ol{grid-template-columns:1fr}}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:flex;gap:14px;align-items:flex-start}
+.steps li::before{content:counter(s);flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--accent);font-weight:700}
+.steps li b{display:block}
+.steps li span{color:var(--muted);font-size:.93rem}
+
+/* Builder */
+.builder{padding-block:48px}
+.builder-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:22px}
+.builder-head h2{font-family:var(--f-display);font-weight:400;font-size:clamp(1.8rem,4vw,2.6rem)}
+.example-pill{display:inline-flex;align-items:center;gap:10px;background:var(--soft);border:1px dashed var(--gold);border-radius:999px;padding:6px 8px 6px 14px;font-size:.85rem}
+.bgrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;align-items:start}
+@media (max-width:960px){.bgrid{grid-template-columns:1fr}}
+.form{display:grid;gap:18px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.card h3{font-size:1rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3 .opt{font-weight:400;font-size:.8rem;color:var(--muted)}
+.row{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+label.f{display:grid;gap:6px;font-size:.88rem;color:var(--muted);min-width:0}
+input[type=text],input[type=number],input[type=url],textarea{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--ink);font-size:1rem}
+input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+textarea{resize:vertical;min-height:96px;line-height:1.55}
+.hint{font-size:.8rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip span{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:.92rem;background:var(--bg);transition:border-color .15s}
+.chip span small{color:var(--muted);font-size:.78rem}
+.chip input:checked + span{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface));color:var(--ink)}
+.chip input:focus-visible + span{outline:3px solid var(--accent);outline-offset:2px}
+.langs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.langs .chip span{width:100%;justify-content:space-between;border-radius:12px}
+.themes{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media (max-width:520px){.themes{grid-template-columns:repeat(3,1fr)}}
+.themes .chip span{flex-direction:column;border-radius:12px;padding:8px;width:100%;font-size:.8rem}
+.swatch{width:100%;aspect-ratio:1.5;border-radius:8px;max-width:100%}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:18px;text-align:center;cursor:pointer;color:var(--muted);transition:border-color .15s,background .15s}
+.drop.over,.drop:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.thumbs figure{margin:0;position:relative;width:76px;height:76px;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+.thumbs button{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;cursor:pointer;font-size:13px;line-height:1}
+.thumbs .tag{position:absolute;left:0;right:0;bottom:0;font-size:10px;background:rgba(0,0,0,.6);color:#fff;text-align:center}
+.social-row{display:flex;gap:10px}
+.social-row input{flex:1;min-width:0}
+.scan{margin-top:12px;font-size:.88rem;display:grid;gap:4px}
+.scan .ln{display:flex;gap:8px;align-items:center;color:var(--muted)}
+.scan .ln.ok{color:var(--ink)} .scan .ln.err{color:var(--accent)}
+.scan .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.scan .ln.run .dot{animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:.88rem;color:var(--muted)}
+.consent input{margin-top:4px;width:18px;height:18px;accent-color:var(--accent);flex:none}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.status{font-size:.86rem;color:var(--muted);margin-top:10px;min-height:1.3em}
+
+/* Phone preview */
+.pv{position:sticky;top:84px;display:grid;gap:12px;justify-items:center}
+.phone{width:100%;max-width:360px;height:680px;border-radius:40px;border:10px solid #10241D;box-shadow:0 30px 60px -30px rgba(0,0,0,.45);overflow:hidden;position:relative;background:#10241D}
+.phone .gift{height:100%;overflow-y:auto;scrollbar-width:none}
+.phone .gift::-webkit-scrollbar{display:none}
+.phone::before{content:"";position:absolute;top:8px;left:50%;translate:-50% 0;width:90px;height:22px;border-radius:20px;background:#10241D;z-index:3}
+@media (max-width:960px){.pv{position:static}.phone{height:600px}}
+
+/* Disclaimer */
+.disc{padding-block:24px 48px}
+.disc .box{border:1.5px solid var(--gold);background:color-mix(in srgb,var(--gold) 9%,var(--surface));border-radius:var(--r);padding:20px 22px;display:grid;gap:8px}
+.disc .box p{margin:0;font-size:.93rem;color:var(--muted);max-width:75ch}
+.disc .box b{color:var(--ink)}
+
+/* Footer */
+footer{border-top:1px solid var(--line);background:var(--surface);padding-block:36px 28px}
+.fgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px}
+@media (max-width:760px){.fgrid{grid-template-columns:1fr 1fr}}
+footer h4{margin:0 0 10px;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+footer ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+footer button.lnk{background:none;border:0;padding:0;cursor:pointer;color:var(--ink);text-align:start}
+footer button.lnk:hover{color:var(--accent);text-decoration:underline}
+footer p{color:var(--muted);font-size:.9rem;margin:8px 0 0}
+.fbottom{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:.83rem;color:var(--muted)}
+
+/* Dialogs */
+dialog{border:0;border-radius:18px;padding:0;max-width:min(680px,calc(100vw - 32px));width:100%;background:var(--surface);color:var(--ink);box-shadow:0 30px 80px -20px rgba(0,0,0,.5)}
+dialog::backdrop{background:rgba(8,20,15,.55);backdrop-filter:blur(3px)}
+dialog .dh{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface)}
+dialog .dh h2{font-size:1.25rem}
+dialog .db{padding:6px 22px 22px;max-height:70vh;overflow:auto;font-size:.95rem}
+dialog .db h3{font-size:1rem;margin:18px 0 4px}
+dialog .db p,dialog .db li{color:var(--muted)}
+.x{background:var(--soft);border:0;border-radius:50%;width:34px;height:34px;cursor:pointer;font-size:18px}
+
+/* ================= GIFT (shared by preview + full screen) ================= */
+.gift{--g-ink:#10362A;--g-muted:#3F6457;--g-accent:#E8355E;--g-card:rgba(255,255,255,.86);--g-chip:#FFFFFF;--cake1:#F7C6D0;--cake2:#FFF1D6;--frost:#FFFFFF;--g-bg:#DDF0E4;
+  position:relative;color:var(--g-ink);font-family:var(--f-body);background:var(--g-bg)}
+.gift[data-g="pistachio"]{background:radial-gradient(circle,rgba(16,54,42,.09) 1.5px,transparent 2px) 0 0/22px 22px,#DDF0E4}
+.gift[data-g="zellige"]{--g-ink:#FDF6E3;--g-muted:#CFE3DF;--g-accent:#E8B04A;--g-card:rgba(9,40,52,.84);--g-chip:rgba(255,255,255,.1);--cake1:#1F6B6E;--cake2:#E8B04A;--frost:#FDF6E3;
+  background:var(--zellige,none) 0 0/64px 64px,#0F3B4C}
+.gift[data-g="desert"]{--g-ink:#FFF4E2;--g-muted:#F0D9BB;--g-accent:#F4C46B;--g-card:rgba(20,24,52,.78);--g-chip:rgba(255,255,255,.1);--cake1:#C9874A;--cake2:#F4C46B;--frost:#FFF4E2;
+  background:radial-gradient(ellipse 70% 30% at 25% 102%,#C9874A 0 60%,transparent 61%),radial-gradient(ellipse 70% 34% at 85% 106%,#A9663A 0 60%,transparent 61%),radial-gradient(circle,rgba(255,255,255,.7) 1px,transparent 1.5px) 0 0/37px 41px,linear-gradient(#11163A,#2E2654 55%,#C98C55);background-attachment:local}
+.gift[data-g="rose"]{--g-ink:#5A1730;--g-muted:#8A4A60;--g-accent:#D63C6B;--g-card:rgba(255,255,255,.82);--g-chip:#FFF5F7;--cake1:#F49BB4;--cake2:#FFE1E8;--frost:#FFFFFF;
+  background:radial-gradient(circle at 15% 10%,#F8C3D1 0 18%,transparent 40%),radial-gradient(circle at 90% 60%,#F6B8C8 0 14%,transparent 38%),#FBE3E8}
+.gift[data-g="confetti"]{--g-ink:#2B2A6B;--g-muted:#55548C;--g-accent:#FF5B3A;--g-card:rgba(255,255,255,.88);--g-chip:#FFF9E0;--cake1:#7BD3C9;--cake2:#FFD84D;--frost:#FFFFFF;
+  background:radial-gradient(#FF5B3A 2.5px,transparent 3px) 0 0/40px 40px,radial-gradient(#2B2A6B 2px,transparent 2.5px) 13px 21px/56px 56px,radial-gradient(#22B3A6 2.5px,transparent 3px) 31px 7px/70px 70px,#FFF3C4}
+
+.g-stage{min-height:100%;display:grid;place-items:center;padding:28px 20px;text-align:center}
+.g-reveal{padding:44px 18px 30px;display:grid;justify-items:center;gap:14px;text-align:center}
+.g-panel{background:var(--g-card);border-radius:22px;padding:22px 18px;width:100%;max-width:560px;display:grid;gap:14px;justify-items:center;backdrop-filter:blur(4px)}
+.g-avatar{width:118px;height:118px;border-radius:50%;padding:5px;background:conic-gradient(var(--g-accent),var(--cake2),var(--g-accent));box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}
+.g-avatar img,.g-avatar .ini{width:100%;height:100%;border-radius:50%;object-fit:cover;background:var(--g-card);display:grid;place-items:center;font-size:2.6rem;font-family:var(--f-display);color:var(--g-accent)}
+.g-age{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--g-muted)}
+.gift[dir=rtl] .g-age{letter-spacing:0;font-size:.95rem}
+.g-hb{font-size:clamp(2.2rem,9vw,3.6rem);line-height:1.08;color:var(--g-accent);font-weight:400;text-shadow:0 2px 0 rgba(0,0,0,.08)}
+.phone .g-hb{font-size:2.4rem}
+.g-name{font-size:1.9rem;font-weight:700;margin-top:-4px;word-break:break-word}
+.g-msg{font-size:1.04rem;line-height:1.7;margin:0;max-width:34em;white-space:pre-line}
+.g-sub{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--g-muted);font-weight:600}
+.gift[dir=rtl] .g-sub{letter-spacing:0;font-size:.95rem}
+.g-loves{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;list-style:none;padding:0;margin:0}
+.g-loves li{background:var(--g-chip);border:1px solid color-mix(in srgb,var(--g-accent) 40%,transparent);border-radius:999px;padding:6px 14px;font-size:.92rem}
+.g-memory{margin:0;font-size:1rem;font-style:italic;line-height:1.6;border-inline-start:3px solid var(--g-accent);padding-inline-start:14px;text-align:start;max-width:30em}
+.g-photos{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;padding:8px 4px}
+.g-photos figure{margin:0;background:#fff;padding:7px 7px 24px;box-shadow:0 10px 24px -12px rgba(0,0,0,.5);width:132px;transition:transform .3s}
+.g-photos figure:nth-child(odd){transform:rotate(-4deg)} .g-photos figure:nth-child(even){transform:rotate(3deg)}
+.g-photos figure:hover{transform:rotate(0) scale(1.06)}
+.g-photos img{width:100%;aspect-ratio:1;object-fit:cover}
+.g-from{font-size:.95rem;color:var(--g-muted)}
+.g-from b{display:block;font-family:var(--f-display);font-weight:400;font-size:1.7rem;color:var(--g-ink)}
+.gift[dir=rtl] .g-from b{font-family:var(--f-ar)}
+.g-social{display:inline-flex;align-items:center;gap:8px;background:var(--g-chip);border-radius:999px;padding:6px 14px;font-size:.88rem;text-decoration:none;color:var(--g-ink);border:1px solid color-mix(in srgb,var(--g-ink) 18%,transparent)}
+.g-made{font-size:.75rem;color:var(--g-muted);opacity:.85}
+.g-made a{color:inherit}
+
+/* Cover & cake stages */
+.g-env{width:min(100%,380px);display:grid;gap:18px;justify-items:center;background:var(--g-card);border-radius:26px;padding:34px 22px;backdrop-filter:blur(4px)}
+.g-seal{width:120px;height:120px;border-radius:50%;background:var(--g-accent);display:grid;place-items:center;box-shadow:0 0 0 10px color-mix(in srgb,var(--g-accent) 25%,transparent),0 20px 40px -14px rgba(0,0,0,.5);animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-3deg)}}
+.g-open{font-size:1.6rem;font-weight:700;line-height:1.3}
+.g-btn{background:var(--g-ink);color:var(--g-card);border:0;border-radius:999px;padding:14px 26px;font-weight:700;font-size:1rem;cursor:pointer}
+.gift[data-g="zellige"] .g-btn,.gift[data-g="desert"] .g-btn{background:var(--g-accent);color:#1b1407}
+.g-wish{font-size:1.25rem;font-weight:600;max-width:20em}
+.cakebtn{background:none;border:0;cursor:pointer;padding:0;width:min(100%,320px)}
+.flame{transform-origin:50% 100%;animation:flick .25s infinite alternate}
+.flame:nth-of-type(2n){animation-duration:.31s}
+@keyframes flick{to{transform:scale(.92,1.08) skewX(3deg)}}
+.out .flame{animation:none;opacity:0;transition:opacity .4s}
+.smoke{opacity:0}
+.out .smoke{animation:smoke 1.6s ease-out forwards}
+@keyframes smoke{0%{opacity:.7;transform:translateY(0)}100%{opacity:0;transform:translateY(-40px) scale(1.8)}}
+
+/* Full-screen gift view */
+.gv{position:fixed;inset:0;z-index:100;overflow:hidden;background:#000}
+.gv .gift{position:absolute;inset:0;overflow-y:auto}
+.gv .gift > .g-stage{min-height:100%}
+.gv-bar{position:fixed;z-index:102;top:calc(12px + env(safe-area-inset-top,0px));right:12px;display:flex;gap:8px}
+.gv-bar button{background:rgba(0,0,0,.55);color:#fff;border:0;border-radius:999px;padding:8px 14px;cursor:pointer;font-size:.9rem;backdrop-filter:blur(6px)}
+#confetti{position:fixed;inset:0;z-index:101;pointer-events:none;width:100%;height:100%}
+body.giftmode .site{display:none}
+.g-end{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.g-end button,.g-end a{background:transparent;border:1.5px solid color-mix(in srgb,var(--g-ink) 35%,transparent);color:var(--g-ink);border-radius:999px;padding:8px 16px;cursor:pointer;font-size:.9rem;text-decoration:none}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="site">
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Candlee home">
+      <svg width="26" height="34" viewBox="0 0 26 34" aria-hidden="true"><path d="M13 2c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="var(--gold)"/><path d="M13 8c2 3 3 4.5 3 6a3 3 0 0 1-6 0c0-1.5 1-3 3-6z" fill="var(--accent)"/><rect x="8" y="20" width="10" height="13" rx="2" fill="var(--ink)"/></svg>
+      Candlee<small>.online</small>
+    </a>
+    <nav class="nav">
+      <a href="#how" class="hide-sm">How it works</a>
+      <a href="#make" class="hide-sm">Languages</a>
+      <a href="#make" class="btn btn-primary btn-sm">Make a gift</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Birthday surprises in 10 languages</div>
+        <h1 class="rot" id="rot" aria-live="polite"><span class="lf-latin">Happy Birthday</span></h1>
+        <div class="rot-meta" id="rotMeta">English</div>
+        <p class="lead">Turn their name, their photos and the things they love into a birthday surprise they open on their phone, blow out the candles, and smile. Arabic, Moroccan Darija and Gulf Arabic included. Ready in under a minute.</p>
+        <div class="hero-ctas">
+          <a href="#make" class="btn btn-primary">Make a birthday gift</a>
+          <button class="btn btn-ghost" id="heroDemo" type="button">See an example</button>
+        </div>
+        <div class="ticker" id="ticker" aria-label="Available languages"></div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="bigcake" id="heroCake"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="steps" id="how">
+    <div class="wrap">
+      <div class="eyebrow">How it works</div>
+      <ol>
+        <li><div><b>Tell us about them</b><span>Name, age, photos, the things they love, or paste their social link to pull their profile photo.</span></div></li>
+        <li><div><b>Pick a language and a look</b><span>10 languages, 3 moods, 5 designs. The message writes itself; edit it if you like.</span></div></li>
+        <li><div><b>Send it</b><span>Share the link on WhatsApp or download the gift as one file. They open it, blow out the candles, and the surprise unfolds.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="builder" id="make">
+    <div class="wrap">
+      <div class="builder-head">
+        <div>
+          <div class="eyebrow">The gift maker</div>
+          <h2>Make it about them</h2>
+        </div>
+        <div class="example-pill" id="examplePill">Example filled in. Replace with your person. <button class="btn btn-ghost btn-sm" id="clearEx" type="button">Start blank</button></div>
+      </div>
+
+      <div class="bgrid">
+        <form class="form" id="form" autocomplete="off" novalidate>
+          <div class="card">
+            <h3>Who is it for?</h3>
+            <div class="row">
+              <label class="f">Their name<input type="text" dir="auto" id="f-name" maxlength="40" placeholder="e.g. Yasmine"></label>
+              <label class="f">Age they're turning <input type="number" id="f-age" min="1" max="120" placeholder="optional"></label>
+            </div>
+            <div style="margin-top:12px" class="chips" role="radiogroup" aria-label="Addressed as">
+              <label class="chip"><input type="radio" name="g" value="f" id="g-f"><span>She <small>هي</small></span></label>
+              <label class="chip"><input type="radio" name="g" value="m" id="g-m"><span>He <small>هو</small></span></label>
+            </div>
+            <div class="hint" style="margin-top:6px">Used so the Arabic, Darija and Gulf wording is grammatically right.</div>
+          </div>
+
+          <div class="card">
+            <h3>Language</h3>
+            <div class="langs" id="langs" role="radiogroup" aria-label="Gift language"></div>
+          </div>
+
+          <div class="card">
+            <h3>Mood &amp; message</h3>
+            <div class="chips" role="radiogroup" aria-label="Mood">
+              <label class="chip"><input type="radio" name="tone" value="heart" id="t-heart"><span>Heartfelt</span></label>
+              <label class="chip"><input type="radio" name="tone" value="fun" id="t-fun"><span>Funny</span></label>
+              <label class="chip"><input type="radio" name="tone" value="love" id="t-love"><span>Romantic</span></label>
+            </div>
+            <label class="f" style="margin-top:12px">Message <span class="hint">written for you, edit freely</span>
+              <textarea id="f-msg" rows="5" dir="auto"></textarea>
+            </label>
+          </div>
+
+          <div class="card">
+            <h3>Design</h3>
+            <div class="themes" id="themes" role="radiogroup" aria-label="Design"></div>
+          </div>
+
+          <div class="card">
+            <h3>Their social profile <span class="opt">optional</span></h3>
+            <div class="social-row">
+              <input type="url" id="f-social" placeholder="instagram.com/username, tiktok.com/@name, x.com/name…">
+              <button class="btn btn-ghost btn-sm" type="button" id="scanBtn">Scan</button>
+            </div>
+            <div class="scan" id="scan" aria-live="polite"></div>
+            <div class="hint" style="margin-top:8px">We read the handle from the link and fetch their <b>public</b> profile photo only. Nothing is stored on our side.</div>
+          </div>
+
+          <div class="card">
+            <h3>Photos <span class="opt">up to 6</span></h3>
+            <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add photos">Drop photos here or <u>choose files</u></div>
+            <input type="file" id="f-photos" accept="image/*" multiple hidden>
+            <div class="thumbs" id="thumbs"></div>
+          </div>
+
+          <div class="card">
+            <h3>Personal touches <span class="opt">optional</span></h3>
+            <label class="f">Things they love <span class="hint">separate with commas</span><input type="text" dir="auto" id="f-loves" maxlength="240"></label>
+            <label class="f" style="margin-top:12px">A memory you share<textarea id="f-memory" dir="auto" rows="2" maxlength="280"></textarea></label>
+            <label class="f" style="margin-top:12px">From<input type="text" dir="auto" id="f-from" maxlength="40" placeholder="Your name"></label>
+          </div>
+
+          <div class="card">
+            <label class="consent"><input type="checkbox" id="f-consent"><span>I have the right to use these photos and details, and this gift is not misleading, offensive or illegal. I accept the <button type="button" class="lnk" data-open="terms" style="background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline">Terms</button> and <button type="button" data-open="disclaimer" style="background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline">Disclaimer</button>.</span></label>
+            <div class="actions">
+              <button class="btn btn-primary" type="button" id="playBtn">▶ Play the surprise</button>
+              <button class="btn btn-ghost" type="button" id="copyBtn">Copy gift link</button>
+              <a class="btn btn-ghost" id="waBtn" href="#" target="_blank" rel="noopener">Send on WhatsApp</a>
+              <button class="btn btn-ghost" type="button" id="dlBtn">Download gift file</button>
+            </div>
+            <div class="status" id="status" aria-live="polite"></div>
+          </div>
+        </form>
+
+        <aside class="pv" aria-label="Live preview">
+          <div class="eyebrow">Live preview</div>
+          <div class="phone"><div class="gift" id="pvGift"></div></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="disc">
+    <div class="wrap">
+      <div class="box">
+        <div class="eyebrow" style="color:var(--gold)">Please read</div>
+        <p><b>You are responsible for what you create and send.</b> Candlee is a tool. We are not responsible for any illegal, misleading, defamatory, offensive or infringing content made with it, including photos or profile information used without the person's permission, impersonation, scams or harassment.</p>
+        <p>Only use photos and details you have the right to share, and only for people who would welcome the gift. Social profile scanning reads public information through third-party services; we don't verify its accuracy. <button type="button" data-open="disclaimer" style="background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;font:inherit">Read the full disclaimer</button>.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div>
+        <a class="brand" href="#top">Candlee<small>.online</small></a>
+        <p>Personal birthday surprises in 10 languages. No account, no app, nothing stored on a server.</p>
+      </div>
+      <div><h4>Product</h4><ul>
+        <li><button class="lnk" data-open="about">About us</button></li>
+        <li><button class="lnk" data-open="how">How it works</button></li>
+        <li><button class="lnk" data-open="faq">FAQ</button></li>
+      </ul></div>
+      <div><h4>Legal</h4><ul>
+        <li><button class="lnk" data-open="terms">Terms of use</button></li>
+        <li><button class="lnk" data-open="privacy">Privacy policy</button></li>
+        <li><button class="lnk" data-open="disclaimer">Disclaimer</button></li>
+        <li><button class="lnk" data-open="cookies">Cookie policy</button></li>
+      </ul></div>
+      <div><h4>Help</h4><ul>
+        <li><button class="lnk" data-open="contact">Contact</button></li>
+        <li><button class="lnk" data-open="report">Report abuse</button></li>
+      </ul></div>
+    </div>
+    <div class="fbottom"><span>© <span id="yr"></span> Candlee. All rights reserved.</span><span>عيد ميلاد سعيد · نهار زيادتك مبروك · عساك من عوّاده</span></div>
+  </div>
+</footer>
+
+<dialog id="dlg"><div class="dh"><h2 id="dlgT"></h2><button class="x" id="dlgX" aria-label="Close">×</button></div><div class="db" id="dlgB"></div></dialog>
+</div>
+
+<!-- Full-screen gift -->
+<div class="gv" id="gv" hidden>
+  <div class="gv-bar"><button id="gvSound" type="button" aria-label="Toggle music">♪ Music on</button><button id="gvClose" type="button">Close ✕</button></div>
+  <div class="gift" id="gvGift"></div>
+</div>
+<canvas id="confetti" hidden></canvas>
+
+<script>
+const SRC = '<!doctype html>\n' + document.documentElement.outerHTML;
+(function(){
+"use strict";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- Languages ---------- */
+const LANGS = [
+ {id:'en',name:'English',nat:'English',dir:'ltr',font:'latin',
+  hb:'Happy Birthday',open:'A little surprise for {name}',tap:'Tap to open',wish:'Make a wish, then tap the candles',
+  loves:'Things that make you, you',memory:'Remember when…',age:'Turning {age} today',from:'With love,',
+  msgs:{heart:'{name}, the world got a little brighter the day you arrived. Thank you for every laugh, every kind word and every moment. May this year give back all the joy you give everyone else.',
+        fun:'{name}, another year older and somehow still the coolest person in the room. Eat the cake, make the wish, and ignore the number.',
+        love:'{name}, every year with you is my favourite one. Happy birthday to the person who makes ordinary days feel like a celebration.'}},
+ {id:'ar',name:'Arabic',nat:'العربية',dir:'rtl',font:'ar',
+  hb:'عيد ميلاد سعيد',open:'مفاجأة صغيرة إلى {name}',tap:'اضغط لفتحها',wish:{m:'تمنَّ أمنية، ثم المس الشموع',f:'تمنَّي أمنية، ثم المسي الشموع'},
+  loves:'أشياء تُشبهك',memory:'ذكرى لا تُنسى',age:'عمرك اليوم {age}',from:'بكل حب،',
+  msgs:{heart:{m:'{name}، في مثل هذا اليوم صار العالم أجمل بوجودك. شكرًا على كل ضحكة وكل كلمة طيبة. كل عام وأنت بخير، وعسى أن يحمل لك هذا العام كل الفرح الذي تمنحه للآخرين.',f:'{name}، في مثل هذا اليوم صار العالم أجمل بوجودكِ. شكرًا على كل ضحكة وكل كلمة طيبة. كل عام وأنتِ بخير، وعسى أن يحمل لكِ هذا العام كل الفرح الذي تمنحينه للآخرين.'},
+        fun:{m:'{name}، كبرت سنة وما زلت الأروع بيننا! كُل الكعكة، تمنَّ أمنيتك، وانسَ الرقم.',f:'{name}، كبرتِ سنة وما زلتِ الأروع بيننا! كُلي الكعكة، تمنَّي أمنيتك، وانسَي الرقم.'},
+        love:{m:'{name}، كل سنة معك هي أجمل سنوات عمري. عيد ميلاد سعيد لمن يجعل أيامي العادية احتفالًا.',f:'{name}، كل سنة معكِ هي أجمل سنوات عمري. عيد ميلاد سعيد لمن تجعل أيامي العادية احتفالًا.'}}},
+ {id:'ma',name:'Moroccan Darija',nat:'الدارجة',dir:'rtl',font:'ar',
+  hb:'نهار زيادتك مبروك',open:'سوربريز صغيرة لـ{name}',tap:'وْرك هنا باش تحلّها',wish:{m:'تمنّى شي حاجة وطفي الشمع',f:'تمنّاي شي حاجة وطفّي الشمع'},
+  loves:'حوايج كيشبهو ليك',memory:'ذكرى ما تتنساش',age:'اليوم وْلّيتي {age} عام',from:'مع بزاف ديال الحب،',
+  msgs:{heart:'{name}، نهار زيادتك مبروك! الله يخليك لينا ويعطيك الصحة وطولة العمر. شكرا على كل ضحكة وكل كلمة زوينة. الله يجعل هاد العام يكون أحسن عام فحياتك.',
+        fun:{m:'{name}، زدتي عام آخر وباقي نتا لْواعر! كول الكيكة، تمنّى، وماتحسبش لعمار.',f:'{name}، زدتي عام آخر وباقية نتي لْواعرة! كولي الكيكة، تمنّاي، وماتحسبيش لعمار.'},
+        love:'{name}، كل عام معاك هو أحسن عام فحياتي. نهار زيادتك مبروك على اللي كيرجّع أيامي كاملين عيد.'}},
+ {id:'gulf',name:'Gulf Arabic',nat:'خليجي',dir:'rtl',font:'ar',
+  hb:{m:'عساك من عوّاده',f:'عساج من عوّاده'},open:'مفاجأة صغيّرة لـ{name}',tap:'اضغط عشان تفتحها',wish:{m:'تمنّ أمنية وبعدين اطفّ الشموع',f:'تمنّي أمنية وبعدين اطفّي الشموع'},
+  loves:{m:'أشياء تشبهك',f:'أشياء تشبهج'},memory:'ذكرى ما تنتسى',age:{m:'اليوم صار عمرك {age}',f:'اليوم صار عمرج {age}'},from:'مع كل الحب،',
+  msgs:{heart:{m:'{name}، كل عام وأنت بخير وعساك من عوّاده. الله يخليك لنا ويسعدك دايم. شكرًا على كل ضحكة وكل كلمة حلوة، وعسى سنتك الجاية أحلى من اللي قبلها.',f:'{name}، كل عام وأنتِ بخير وعساج من عوّاده. الله يخليج لنا ويسعدج دايم. شكرًا على كل ضحكة وكل كلمة حلوة، وعسى سنتج الجاية أحلى من اللي قبلها.'},
+        fun:{m:'{name}، كبرت سنة وللحين أنت أزين واحد فينا! كل الكيك، تمنّ، ولا تحسب العمر.',f:'{name}، كبرتي سنة وللحين أنتِ أزين وحدة فينا! كلي الكيك، تمنّي، ولا تحسبين العمر.'},
+        love:{m:'{name}، كل سنة وياك هي أحلى سنة في عمري. عساك من عوّاده يا أغلى الناس.',f:'{name}، كل سنة وياج هي أحلى سنة في عمري. عساج من عوّاده يا أغلى الناس.'}}},
+ {id:'fr',name:'French',nat:'Français',dir:'ltr',font:'latin',
+  hb:'Joyeux anniversaire',open:'Une petite surprise pour {name}',tap:'Touchez pour ouvrir',wish:'Fais un vœu, puis touche les bougies',
+  loves:'Ce qui te rend unique',memory:'Tu te souviens ?',age:'{age} ans aujourd’hui',from:'Avec tout mon amour,',
+  msgs:{heart:'{name}, le monde est plus lumineux grâce à toi. Merci pour chaque rire, chaque mot gentil, chaque moment partagé. Que cette année te rende toute la joie que tu donnes aux autres.',
+        fun:'{name}, une année de plus et toujours la personne la plus cool de la pièce. Mange le gâteau, fais un vœu et oublie le chiffre !',
+        love:'{name}, chaque année avec toi est ma préférée. Joyeux anniversaire à la personne qui transforme mes jours ordinaires en fête.'}},
+ {id:'es',name:'Spanish',nat:'Español',dir:'ltr',font:'latin',
+  hb:'¡Feliz cumpleaños!',open:'Una pequeña sorpresa para {name}',tap:'Toca para abrir',wish:'Pide un deseo y toca las velas',
+  loves:'Lo que te hace especial',memory:'¿Te acuerdas?',age:'Hoy cumples {age}',from:'Con todo mi cariño,',
+  msgs:{heart:'{name}, el mundo es más bonito contigo en él. Gracias por cada risa, cada palabra amable y cada momento. Que este año te devuelva toda la alegría que regalas a los demás.',
+        fun:'{name}, un año más y sigues siendo la persona más genial del lugar. Come pastel, pide un deseo y olvida el número.',
+        love:'{name}, cada año a tu lado es mi favorito. Feliz cumpleaños a quien convierte mis días normales en una fiesta.'}},
+ {id:'hi',name:'Hindi',nat:'हिन्दी',dir:'ltr',font:'hi',
+  hb:'जन्मदिन मुबारक हो!',open:'{name} के लिए एक छोटा-सा सरप्राइज़',tap:'खोलने के लिए टैप करें',wish:'एक इच्छा माँगो, फिर मोमबत्तियों पर टैप करो',
+  loves:'जो चीज़ें तुम्हें ख़ास बनाती हैं',memory:'याद है?',age:'आज {age} साल पूरे!',from:'ढेर सारे प्यार के साथ,',
+  msgs:{heart:'{name}, तुम्हारे होने से दुनिया थोड़ी और रोशन है। हर हँसी, हर प्यारे शब्द और हर पल के लिए शुक्रिया। भगवान करे यह साल तुम्हारे लिए ढेर सारी ख़ुशियाँ लेकर आए।',
+        fun:'{name}, उम्र बस एक नंबर है! केक खाओ, विश माँगो और नंबर भूल जाओ।',
+        love:'{name}, तुम्हारे साथ हर साल मेरा सबसे पसंदीदा साल है। मेरे आम दिनों को त्योहार बनाने के लिए शुक्रिया। जन्मदिन मुबारक!'}},
+ {id:'zh',name:'Chinese',nat:'中文',dir:'ltr',font:'zh',
+  hb:'生日快乐！',open:'给{name}的小惊喜',tap:'点击打开',wish:'许个愿，然后点一下蜡烛',
+  loves:'独一无二的你',memory:'还记得吗？',age:'今天{age}岁啦',from:'满怀爱意，',
+  msgs:{heart:'{name}，因为有你，世界变得更明亮。谢谢你的每一次欢笑、每一句温暖的话和每一个瞬间。愿新的一岁，把你给别人的快乐全部还给你。',
+        fun:'{name}，又长一岁，你依然是全场最酷的人！吃蛋糕、许愿，年龄什么的就忘了吧。',
+        love:'{name}，和你在一起的每一年都是我最喜欢的一年。生日快乐，谢谢你把平凡的日子变成节日。'}},
+ {id:'pt',name:'Portuguese',nat:'Português',dir:'ltr',font:'latin',
+  hb:'Feliz aniversário!',open:'Uma pequena surpresa para {name}',tap:'Toque para abrir',wish:'Faça um pedido e toque nas velas',
+  loves:'O que te faz especial',memory:'Lembra?',age:'Hoje são {age} anos',from:'Com todo o carinho,',
+  msgs:{heart:'{name}, o mundo fica mais bonito com você nele. Gratidão por cada risada, cada palavra gentil e cada momento. Que este ano te devolva toda a alegria que você dá aos outros.',
+        fun:'{name}, mais um ano e continua sendo a pessoa mais legal do lugar. Coma o bolo, faça um pedido e esqueça o número!',
+        love:'{name}, cada ano ao seu lado é o meu favorito. Feliz aniversário para quem transforma meus dias comuns em festa.'}},
+ {id:'ru',name:'Russian',nat:'Русский',dir:'ltr',font:'ru',
+  hb:'С днём рождения!',open:'{name}, для тебя сюрприз',tap:'Нажми, чтобы открыть',wish:'Загадай желание и нажми на свечи',
+  loves:'Что делает тебя тобой',memory:'Помнишь?',age:'Сегодня тебе {age}',from:'С любовью,',
+  msgs:{heart:'{name}, мир становится светлее, когда ты рядом. Спасибо за каждую улыбку, каждое доброе слово и каждый момент. Пусть этот год вернёт тебе всю радость, которую ты даришь другим.',
+        fun:'{name}, ещё один год, а ты всё так же круче всех! Ешь торт, загадывай желание и забудь про цифры.',
+        love:'{name}, каждый год с тобой мой самый любимый. С днём рождения тому, кто превращает обычные дни в праздник.'}}
+];
+const LMAP = Object.fromEntries(LANGS.map(l => [l.id, l]));
+const THEMES = [
+  {id:'pistachio',name:'Pistachio'},{id:'zellige',name:'Zellige'},{id:'desert',name:'Desert gold'},
+  {id:'rose',name:'Rose'},{id:'confetti',name:'Confetti'}];
+const pick = (v, g) => (v && typeof v === 'object') ? (v[g] || v.m) : v;
+const fill = (s, o) => String(s).replace(/\{(\w+)\}/g, (_, k) => o[k] ?? '');
+
+/* ---------- Zellige tile (canvas) ---------- */
+(function zellige(){
+  const c = document.createElement('canvas'), s = 64; c.width = c.height = s;
+  const x = c.getContext('2d');
+  x.fillStyle = '#0F3B4C'; x.fillRect(0,0,s,s);
+  const star = (cx, cy, r, col) => { x.fillStyle = col; for (const a of [0, Math.PI/4]) { x.save(); x.translate(cx,cy); x.rotate(a); x.fillRect(-r,-r,2*r,2*r); x.restore(); } };
+  for (const [cx,cy] of [[0,0],[64,0],[0,64],[64,64]]) { star(cx,cy,13,'#1F6B6E'); star(cx,cy,6,'#FDF6E3'); }
+  star(32,32,13,'#E8B04A'); star(32,32,8,'#0F3B4C'); star(32,32,4,'#7FC8C2');
+  document.documentElement.style.setProperty('--zellige', `url(${c.toDataURL()})`);
+})();
+
+/* ---------- Cake SVG ---------- */
+function cakeSVG(age){
+  const xs = [80,100,120,140,160];
+  const candles = xs.map((x,i) => `
+    <g><rect x="${x-4}" y="44" width="8" height="30" rx="2" fill="var(--g-card, #fff)" stroke="rgba(0,0,0,.12)"/>
+    <path d="M${x-4} 52 l8 -4 M${x-4} 60 l8 -4 M${x-4} 68 l8 -4" stroke="var(--g-accent,#E8355E)" stroke-width="2"/>
+    <line x1="${x}" y1="44" x2="${x}" y2="38" stroke="#333" stroke-width="1.5"/>
+    <g class="flame"><ellipse cx="${x}" cy="30" rx="5.5" ry="10" fill="#FFB938"/><ellipse cx="${x}" cy="33" rx="2.6" ry="5" fill="#FFF3B0"/></g>
+    <circle class="smoke" cx="${x}" cy="30" r="5" fill="rgba(160,160,160,.6)" style="animation-delay:${i*80}ms"/></g>`).join('');
+  return `<svg viewBox="0 0 240 220" role="img" aria-label="Birthday cake">
+    <ellipse cx="120" cy="204" rx="104" ry="12" fill="rgba(0,0,0,.18)"/>
+    <rect x="22" y="190" width="196" height="10" rx="5" fill="var(--frost,#fff)" opacity=".9"/>
+    <rect x="30" y="126" width="180" height="66" rx="14" fill="var(--cake1,#F7C6D0)"/>
+    <path d="M30 140 q0-14 14-14 h152 q14 0 14 14 v4 q-9 10-18 0 q-9 12-18 0 q-9 10-18 0 q-9 14-18 0 q-9 10-18 0 q-9 12-18 0 q-9 10-18 0 q-9 14-18 0 q-9 10-18 0 q-9 10-18 0z" fill="var(--frost,#fff)"/>
+    <rect x="58" y="78" width="124" height="52" rx="12" fill="var(--cake2,#FFF1D6)"/>
+    <path d="M58 90 q0-12 12-12 h100 q12 0 12 12 v3 q-8 9-16 0 q-8 11-16 0 q-8 9-16 0 q-8 12-16 0 q-8 9-16 0 q-8 11-16 0 q-8 9-16 0 q-8 9-16 0z" fill="var(--frost,#fff)"/>
+    ${[50,74,98,142,166,190].map((x,i)=>`<circle cx="${x}" cy="${168+(i%2)*6}" r="4" fill="var(--g-accent,#E8355E)"/>`).join('')}
+    ${age ? `<text x="120" y="178" text-anchor="middle" font-family="Shrikhand, Georgia, serif" font-size="26" fill="var(--g-accent,#E8355E)">${esc(age)}</text>` : ''}
+    ${candles}
+  </svg>`;
+}
+
+/* ---------- Form state ---------- */
+const form = $('#form');
+const photos = []; // {src}
+let social = null; // {p, h, url, img}
+let msgDirty = false;
+const EXAMPLE = {name:'Yasmine', age:27, g:'f', l:'ma', tone:'heart', th:'zellige',
+  loves:'Mint tea, sunsets in Essaouira, Fairuz in the morning, terrible puns',
+  memory:'The night we got lost in Chefchaouen and found the best msemen in town.', from:'Salma'};
+
+// Build language + theme chips
+$('#langs').innerHTML = LANGS.map(l => `<label class="chip"><input type="radio" name="l" value="${l.id}" id="l-${l.id}"><span>${l.name}<small dir="auto">${l.nat}</small></span></label>`).join('');
+$('#themes').innerHTML = THEMES.map(t => `<label class="chip"><input type="radio" name="th" value="${t.id}" id="th-${t.id}"><span><span class="gift swatch" data-g="${t.id}"></span>${t.name}</span></label>`).join('');
+
+function setForm(d){
+  $('#f-name').value = d.name || ''; $('#f-age').value = d.age || '';
+  (document.querySelector(`input[name=g][value="${d.g||'f'}"]`)).checked = true;
+  (document.querySelector(`input[name=l][value="${d.l||'en'}"]`)).checked = true;
+  (document.querySelector(`input[name=tone][value="${d.tone||'heart'}"]`)).checked = true;
+  (document.querySelector(`input[name=th][value="${d.th||'pistachio'}"]`)).checked = true;
+  $('#f-loves').value = d.loves || ''; $('#f-memory').value = d.memory || ''; $('#f-from').value = d.from || '';
+  msgDirty = false; regenMsg();
+}
+const val = n => (document.querySelector(`input[name=${n}]:checked`) || {}).value;
+function regenMsg(){
+  if (msgDirty) return;
+  const L = LMAP[val('l')]; const g = val('g');
+  const name = $('#f-name').value.trim() || (L.dir === 'rtl' ? '…' : '…');
+  $('#f-msg').value = fill(pick(L.msgs[val('tone')], g), {name});
+}
+function read(){
+  return { n: $('#f-name').value.trim(), a: $('#f-age').value.trim(), g: val('g'), l: val('l'), t: val('tone'), th: val('th'),
+    m: $('#f-msg').value.trim(), lv: $('#f-loves').value.split(',').map(s => s.trim()).filter(Boolean).slice(0,10),
+    me: $('#f-memory').value.trim(), f: $('#f-from').value.trim(),
+    s: social ? {p: social.p, h: social.h, u: social.url, i: social.img || null} : null,
+    ph: photos.map(p => p.src) };
+}
+
+/* ---------- Render reveal ---------- */
+const PLAT = {instagram:'Instagram',tiktok:'TikTok',x:'X',youtube:'YouTube',github:'GitHub',facebook:'Facebook',threads:'Threads',linkedin:'LinkedIn',snapchat:'Snapchat'};
+function revealHTML(st, opts = {}){
+  const L = LMAP[st.l] || LANGS[0], g = st.g || 'f';
+  const name = st.n || '…';
+  const avatar = (st.s && st.s.i) || st.ph[0];
+  const msg = st.m || fill(pick(L.msgs[st.t || 'heart'], g), {name});
+  const photosToShow = st.ph.filter(p => p !== avatar || st.ph.length > 1).slice(0, 6);
+  return `<div class="g-reveal">
+    <div class="g-panel">
+      <div class="g-avatar">${avatar ? `<img src="${esc(avatar)}" alt="">` : `<div class="ini">${esc((name[0]||'★').toUpperCase())}</div>`}</div>
+      ${st.a ? `<div class="g-age">${esc(fill(pick(L.age, g), {age: st.a}))}</div>` : ''}
+      <h1 class="g-hb lf-${L.font}">${esc(pick(L.hb, g))}</h1>
+      <div class="g-name">${esc(name)}</div>
+      <p class="g-msg">${esc(msg)}</p>
+    </div>
+    ${st.lv.length ? `<div class="g-panel"><div class="g-sub">${esc(pick(L.loves, g))}</div><ul class="g-loves">${st.lv.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : ''}
+    ${photosToShow.length ? `<div class="g-photos">${photosToShow.map(p => `<figure><img src="${esc(p)}" alt="" loading="lazy"></figure>`).join('')}</div>` : ''}
+    ${st.me ? `<div class="g-panel"><div class="g-sub">${esc(pick(L.memory, g))}</div><blockquote class="g-memory">${esc(st.me)}</blockquote></div>` : ''}
+    ${st.f ? `<div class="g-from">${esc(L.from)}<b>${esc(st.f)}</b></div>` : ''}
+    ${st.s && st.s.h ? `<a class="g-social" href="${esc(st.s.u)}" target="_blank" rel="noopener">@${esc(st.s.h)}${st.s.p && PLAT[st.s.p] ? ' · ' + PLAT[st.s.p] : ''}</a>` : ''}
+    ${opts.end ? `<div class="g-end"><button type="button" data-act="replay">↺ ${esc(pick(L.hb, g))}</button>${opts.giftmode ? `<a href="${esc(location.href.split('#')[0])}" data-act="own">Make one for someone →</a>` : ''}</div>` : ''}
+    <div class="g-made">Made with Candlee.online</div>
+  </div>`;
+}
+function applyGiftAttrs(el, st){
+  const L = LMAP[st.l] || LANGS[0];
+  el.dataset.g = st.th || 'pistachio'; el.dir = L.dir; el.lang = st.l === 'ma' || st.l === 'gulf' ? 'ar' : st.l;
+}
+function renderPreview(){
+  const st = read(); const el = $('#pvGift');
+  applyGiftAttrs(el, st); el.innerHTML = revealHTML(st);
+  updateShare();
+}
+
+/* ---------- Full-screen gift ---------- */
+let current = null, giftmode = false, soundOn = true;
+function openGift(st){
+  current = st;
+  const gv = $('#gv'), el = $('#gvGift');
+  applyGiftAttrs(el, st);
+  const L = LMAP[st.l] || LANGS[0], g = st.g || 'f';
+  el.innerHTML = `
+    <section class="g-stage" id="stCover"><div class="g-env">
+      <div class="g-seal"><svg width="46" height="60" viewBox="0 0 26 34" aria-hidden="true"><path d="M13 2c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z" fill="#FFD36B"/><path d="M13 8c2 3 3 4.5 3 6a3 3 0 0 1-6 0c0-1.5 1-3 3-6z" fill="#fff"/><rect x="8" y="20" width="10" height="13" rx="2" fill="#fff"/></svg></div>
+      <div class="g-open">${esc(fill(L.open, {name: st.n || '…'}))}</div>
+      <button class="g-btn" type="button" id="goCake">${esc(L.tap)}</button>
+    </div></section>
+    <section class="g-stage" id="stCake" hidden><div class="g-env">
+      <div class="g-wish">${esc(pick(L.wish, g))}</div>
+      <button class="cakebtn" type="button" id="cake" aria-label="Blow out the candles">${cakeSVG(st.a)}</button>
+    </div></section>
+    <div id="stReveal" hidden>${revealHTML(st, {end:true, giftmode})}</div>`;
+  gv.hidden = false; document.body.style.overflow = 'hidden';
+  $('#gvClose').hidden = giftmode;
+  el.scrollTop = 0;
+  $('#goCake').onclick = () => { $('#stCover').hidden = true; $('#stCake').hidden = false; unlockAudio(); };
+  $('#cake').onclick = blow;
+  el.querySelector('[data-act=replay]').onclick = () => openGift(current);
+  $('#goCake').focus();
+}
+function blow(){
+  const c = $('#cake'); if (c.classList.contains('out')) return;
+  c.classList.add('out');
+  if (soundOn) playSong();
+  setTimeout(() => { $('#stCake').hidden = true; $('#stReveal').hidden = false; $('#gvGift').scrollTop = 0; confetti(); }, 900);
+}
+function closeGift(){ $('#gv').hidden = true; document.body.style.overflow = ''; stopSong(); }
+$('#gvClose').onclick = closeGift;
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#gv').hidden && !giftmode) closeGift(); });
+$('#gvSound').onclick = () => { soundOn = !soundOn; $('#gvSound').textContent = soundOn ? '♪ Music on' : '♪ Music off'; if (!soundOn) stopSong(); };
+
+/* ---------- Music: "Happy Birthday" (public domain melody) ---------- */
+let actx = null, nodes = [];
+function unlockAudio(){ try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch(e){} }
+const NOTE = n => { const m = {C:0,D:2,E:4,F:5,G:7,A:9,B:11}; return 440 * Math.pow(2, (m[n[0]] + (parseInt(n.slice(1)) + 1) * 12 - 69) / 12); };
+const SONG = [['G4',.75],['G4',.25],['A4',1],['G4',1],['C5',1],['B4',2],['G4',.75],['G4',.25],['A4',1],['G4',1],['D5',1],['C5',2],
+  ['G4',.75],['G4',.25],['G5',1],['E5',1],['C5',1],['B4',1],['A4',2],['F5',.75],['F5',.25],['E5',1],['C5',1],['D5',1],['C5',3]];
+function playSong(){
+  unlockAudio(); if (!actx) return; stopSong();
+  let t = actx.currentTime + .15; const beat = .42;
+  for (const [n, d] of SONG) {
+    const f = NOTE(n);
+    for (const [mult, vol] of [[1,.22],[2,.06],[3,.03]]) {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = 'sine'; o.frequency.value = f * mult;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0008, t + d * beat + .5);
+      o.connect(g).connect(actx.destination); o.start(t); o.stop(t + d * beat + .55); nodes.push(o);
+    }
+    t += d * beat;
+  }
+}
+function stopSong(){ nodes.forEach(o => { try { o.stop(); } catch(e){} }); nodes = []; }
+
+/* ---------- Confetti ---------- */
+function confetti(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cv = $('#confetti'); cv.hidden = false;
+  const ctx = cv.getContext('2d'), dpr = devicePixelRatio || 1;
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.scale(dpr, dpr);
+  const cs = getComputedStyle($('#gvGift'));
+  const cols = [cs.getPropertyValue('--g-accent'), cs.getPropertyValue('--cake1'), cs.getPropertyValue('--cake2'), '#FFFFFF', '#FFD84D'].map(s => s.trim() || '#E8355E');
+  const P = Array.from({length: 180}, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 120, y: innerHeight * .45,
+    vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 5, r: Math.random() * 6 + 4, a: Math.random() * 6, va: (Math.random() - .5) * .3,
+    c: cols[Math.floor(Math.random() * cols.length)] }));
+  const t0 = performance.now();
+  (function frame(t){
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const p of P) { p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore(); }
+    if (t - t0 < 4200) requestAnimationFrame(frame); else { ctx.clearRect(0, 0, innerWidth, innerHeight); cv.hidden = true; }
+  })(t0);
+}
+
+/* ---------- Photos ---------- */
+function resize(src, max, q){
+  return new Promise((res, rej) => { const im = new Image(); im.onload = () => {
+    const k = Math.min(1, max / Math.max(im.width, im.height)); const c = document.createElement('canvas');
+    c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', q)); };
+    im.onerror = rej; im.src = src; });
+}
+function readFile(f){ return new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(f); }); }
+async function addFiles(files){
+  for (const f of files) {
+    if (!f.type.startsWith('image/')) continue;
+    if (photos.length >= 6) { status('You can add up to 6 photos.'); break; }
+    try { photos.push({src: await resize(await readFile(f), 900, .82)}); } catch(e){ status('That file could not be read as an image.'); }
+  }
+  drawThumbs(); renderPreview();
+}
+function drawThumbs(){
+  const items = [];
+  if (social && social.img) items.push(`<figure><img src="${esc(social.img)}" alt=""><span class="tag">profile</span><button type="button" data-rm="s" aria-label="Remove profile photo">×</button></figure>`);
+  photos.forEach((p, i) => items.push(`<figure><img src="${esc(p.src)}" alt=""><button type="button" data-rm="${i}" aria-label="Remove photo">×</button></figure>`));
+  $('#thumbs').innerHTML = items.join('');
+}
+$('#thumbs').onclick = e => { const b = e.target.closest('[data-rm]'); if (!b) return;
+  if (b.dataset.rm === 's') { social.img = null; } else photos.splice(+b.dataset.rm, 1);
+  drawThumbs(); renderPreview(); };
+const drop = $('#drop'), fileIn = $('#f-photos');
+drop.onclick = () => fileIn.click();
+drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileIn.click(); } };
+fileIn.onchange = () => { addFiles([...fileIn.files]); fileIn.value = ''; };
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles([...e.dataTransfer.files]));
+
+/* ---------- Social scan ---------- */
+function parseSocial(raw){
+  let s = raw.trim(); if (!s) return null;
+  if (/^@?[\w.]{2,30}$/.test(s)) return {p:null, h:s.replace(/^@/, ''), url:''};
+  let u; try { u = new URL(/^https?:\/\//i.test(s) ? s : 'https://' + s); } catch(e){ return null; }
+  const host = u.hostname.replace(/^(www|m|mobile|vm)\./, '');
+  const parts = u.pathname.split('/').filter(Boolean);
+  const map = {'instagram.com':'instagram','tiktok.com':'tiktok','x.com':'x','twitter.com':'x','youtube.com':'youtube','github.com':'github','facebook.com':'facebook','fb.com':'facebook','threads.net':'threads','linkedin.com':'linkedin','snapchat.com':'snapchat'};
+  const p = map[host]; if (!p) return {p:null, h:'', url:u.href, unknown:true};
+  let h = parts[0] || '';
+  if (p === 'linkedin' && parts[0] === 'in') h = parts[1] || '';
+  if (p === 'snapchat' && parts[0] === 'add') h = parts[1] || '';
+  if (p === 'facebook' && parts[0] === 'profile.php') h = u.searchParams.get('id') || '';
+  h = decodeURIComponent(h).replace(/^@/, '');
+  return {p, h, url:u.href};
+}
+const PROVIDER = {instagram:'instagram',tiktok:'tiktok',x:'x',youtube:'youtube',github:'github',facebook:'facebook',threads:'instagram'};
+const scanEl = $('#scan');
+const line = (txt, cls) => { const d = document.createElement('div'); d.className = 'ln ' + cls; d.innerHTML = `<span class="dot"></span><span></span>`; d.lastChild.textContent = txt; scanEl.appendChild(d); return d; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function scan(){
+  scanEl.innerHTML = '';
+  const info = parseSocial($('#f-social').value);
+  if (!info) { line('Paste a profile link or an @username.', 'err'); return; }
+  if (info.unknown || !info.h) { line('We could not find a username in that link. Try the profile page URL.', 'err'); return; }
+  const btn = $('#scanBtn'); btn.disabled = true;
+  line(`Found ${PLAT[info.p] || 'profile'} @${info.h}`, 'ok');
+  social = {...info, img: null}; renderPreview();
+  const l2 = line('Fetching public profile photo…', 'run');
+  const prov = PROVIDER[info.p];
+  const url = `https://unavatar.io/${prov ? prov + '/' : ''}${encodeURIComponent(info.h)}?fallback=false`;
+  let img = null;
+  try {
+    const r = await Promise.race([fetch(url), wait(9000).then(() => { throw new Error('timeout'); })]);
+    if (r.ok && (r.headers.get('content-type') || '').startsWith('image/')) {
+      const raw = await readFile(await r.blob()); img = await resize(raw, 500, .85);
+    }
+  } catch(e){}
+  if (!img) { // second try: direct image load (no CORS needed to display)
+    img = await new Promise(res => { const im = new Image(); im.onload = () => res(url); im.onerror = () => res(null); im.src = url; setTimeout(() => res(null), 8000); });
+  }
+  l2.remove();
+  if (img) { social.img = img; line('Profile photo added. It will be their avatar.', 'ok'); }
+  else line('That platform kept the photo private (or the account is private). Add a photo below instead; the @handle is still included.', 'err');
+  if (!$('#f-name').value.trim()) { $('#f-name').value = info.h.replace(/[._\d]+/g, ' ').trim().replace(/\b\w/g, c => c.toUpperCase()); regenMsg(); }
+  btn.disabled = false; drawThumbs(); renderPreview();
+}
+$('#scanBtn').onclick = scan;
+$('#f-social').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); scan(); } });
+$('#f-social').addEventListener('input', () => { if (!$('#f-social').value.trim()) { social = null; scanEl.innerHTML = ''; drawThumbs(); renderPreview(); } });
+
+/* ---------- Encoding / sharing ---------- */
+const b64u = bytes => { let s = ''; bytes.forEach(b => s += String.fromCharCode(b)); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
+const unb64u = str => Uint8Array.from(atob(str.replace(/-/g,'+').replace(/_/g,'/')), c => c.charCodeAt(0));
+async function pipe(bytes, Stream){ return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new Stream('deflate-raw'))).arrayBuffer()); }
+async function encode(st){
+  const bytes = new TextEncoder().encode(JSON.stringify(st));
+  if ('CompressionStream' in window) return '1' + b64u(await pipe(bytes, CompressionStream));
+  return '0' + b64u(bytes);
+}
+async function decode(str){
+  const v = str[0], bytes = unb64u(str.slice(1));
+  const out = v === '1' ? await pipe(bytes, DecompressionStream) : bytes;
+  return JSON.parse(new TextDecoder().decode(out));
+}
+async function linkState(){
+  const st = read();
+  st.ph = await Promise.all(st.ph.slice(0, 4).map(p => resize(p, 320, .6)));
+  if (st.s && st.s.i && st.s.i.startsWith('data:')) st.s.i = await resize(st.s.i, 200, .7);
+  return st;
+}
+let shareLink = '';
+let shareTimer = 0;
+function updateShare(){ clearTimeout(shareTimer); shareTimer = setTimeout(async () => {
+  shareLink = location.href.split('#')[0] + '#g=' + await encode(await linkState());
+  const L = LMAP[val('l')];
+  $('#waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(fill(L.open, {name: $('#f-name').value.trim() || ''}) + ' 🎂\n' + shareLink);
+}, 300); }
+const status = t => { $('#status').textContent = t; };
+function canShare(){
+  if (!$('#f-name').value.trim()) { status('Add their name first.'); $('#f-name').focus(); return false; }
+  if (!$('#f-consent').checked) { status('Please tick the confirmation box above the buttons before sharing.'); $('#f-consent').focus(); return false; }
+  return true;
+}
+$('#playBtn').onclick = () => { if (!$('#f-name').value.trim()) { status('Add their name first.'); $('#f-name').focus(); return; } status(''); openGift(read()); };
+$('#copyBtn').onclick = async () => {
+  if (!canShare()) return;
+  shareLink = location.href.split('#')[0] + '#g=' + await encode(await linkState());
+  const long = shareLink.length > 8000 ? ` The link is long (${Math.round(shareLink.length/1000)}k characters) because of the photos. If a messenger cuts it, use Download instead.` : '';
+  try { await navigator.clipboard.writeText(shareLink); status('Gift link copied. Paste it anywhere.' + long); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = shareLink; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); status('Gift link copied.' + long); } catch(_){ status('Copy failed. Select and copy this link manually: ' + shareLink.slice(0, 80) + '…'); } ta.remove(); }
+};
+$('#waBtn').addEventListener('click', e => { if (!canShare()) { e.preventDefault(); return; } if (shareLink.length > 8000) status('Heads-up: with photos the link is long. If WhatsApp cuts it, send the downloaded gift file instead.'); });
+$('#dlBtn').onclick = () => {
+  if (!canShare()) return;
+  const st = read();
+  const data = JSON.stringify(st).replace(/</g, '\\u003c');
+  const html = SRC.replace('<head>', `<head><script>window.__GIFT__=${data};<\/script>`);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([html], {type:'text/html'}));
+  a.download = `happy-birthday-${(st.n || 'gift').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-')}.html`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  status('Gift file downloaded. Send it as an attachment; it opens in any browser, even offline.');
+};
+
+/* ---------- Form wiring ---------- */
+form.addEventListener('input', e => {
+  if (e.target.id === 'f-msg') msgDirty = true;
+  if (e.target.id === 'f-social') return;
+  if (['f-name','g-f','g-m'].includes(e.target.id) || ['l','tone','g'].includes(e.target.name)) {
+    if (e.target.name === 'tone' || e.target.name === 'l') msgDirty = false;
+    regenMsg();
+  }
+  $('#examplePill').hidden = true;
+  renderPreview();
+});
+form.addEventListener('submit', e => e.preventDefault());
+$('#clearEx').onclick = () => {
+  setForm({g:'f', l:val('l'), tone:'heart', th:'pistachio'});
+  photos.length = 0; social = null; $('#f-social').value = ''; scanEl.innerHTML = '';
+  drawThumbs(); $('#examplePill').hidden = true; renderPreview(); $('#f-name').focus();
+};
+
+/* ---------- Hero ---------- */
+let ri = 0, heroTimer;
+function showLang(i){
+  const L = LANGS[i];
+  $('#rot').innerHTML = `<span class="lf-${L.font}" dir="${L.dir}">${esc(pick(L.hb, 'm'))}</span>`;
+  $('#rotMeta').textContent = L.name + (L.nat !== L.name ? ' · ' + L.nat : '');
+  document.querySelectorAll('#ticker button').forEach((b, j) => b.classList.toggle('on', j === i));
+}
+$('#ticker').innerHTML = LANGS.map((l, i) => `<button type="button" data-i="${i}">${l.name}</button>`).join('');
+$('#ticker').onclick = e => { const b = e.target.closest('button'); if (!b) return; ri = +b.dataset.i; showLang(ri); clearInterval(heroTimer);
+  document.getElementById('l-' + LANGS[ri].id).checked = true; msgDirty = false; regenMsg(); renderPreview(); };
+const heroCake = $('#heroCake');
+heroCake.innerHTML = `<div class="gift" data-g="pistachio" style="background:none">${cakeSVG('')}</div>`;
+$('#heroDemo').onclick = () => openGift(read());
+
+/* ---------- Footer pages ---------- */
+const PAGES = {
+  about: ['About us', `<p>Candlee makes it easy to send a birthday wish that feels personal, in the language the person actually speaks at home, from English and French to Moroccan Darija and Gulf Arabic.</p><p>No accounts, no apps, no data kept on our servers. You build the gift in your browser and send it.</p>`],
+  how: ['How it works', `<h3>1. Tell us about them</h3><p>Enter their name, age and whether to address them as he or she (needed for correct Arabic grammar). Add photos, favourite things and a shared memory.</p><h3>2. Optional: paste their social link</h3><p>We read the username from the link and fetch their public profile photo through a third-party avatar service. Private profiles stay private; add a photo yourself instead.</p><h3>3. Choose language, mood and design</h3><p>A message is written for you in the chosen language. Edit it as much as you like.</p><h3>4. Send</h3><p>Copy the link, send it on WhatsApp, or download the gift as one HTML file. When they open it they tap to reveal, make a wish, blow out the candles, and the song plays.</p>`],
+  faq: ['FAQ', `<h3>Is it free?</h3><p>Yes.</p><h3>Where are my photos stored?</h3><p>Nowhere on our side. Photos are packed into the link or the downloaded file you send.</p><h3>Why is my link so long?</h3><p>Photos are compressed into the link itself. For several photos, the downloaded file is more reliable on messengers that cut long links.</p><h3>Why couldn't you get the profile photo?</h3><p>Some platforms block access or the account is private. That's expected; upload a photo instead.</p><h3>Which languages are supported?</h3><p>${LANGS.map(l => l.name).join(', ')}.</p>`],
+  terms: ['Terms of use', `<p>By using Candlee you agree to these terms.</p><h3>Your content</h3><p>You are solely responsible for the names, photos, text, links and any other content you add, and for whom you send the gift to. You confirm you have the right and, where needed, the consent of the people shown, to use that content.</p><h3>Prohibited use</h3><ul><li>Illegal content, or content that infringes copyright, trademark, privacy or image rights.</li><li>Misleading content, impersonation, fraud, phishing or scams.</li><li>Harassment, hate, threats, sexual content involving minors, or content targeting someone who would not welcome it.</li><li>Collecting or exposing personal data of others without permission.</li></ul><h3>No warranty</h3><p>The service is provided "as is" without warranties of any kind. Third-party services (such as avatar lookups and messaging apps) are outside our control.</p><h3>Limitation of liability</h3><p>To the fullest extent permitted by law, Candlee and its operators are not liable for any damages arising from content created or shared by users or from use of the service.</p>`],
+  privacy: ['Privacy policy', `<p>Candlee runs in your browser. We do not operate accounts and do not store the gifts you make on a server.</p><h3>What leaves your device</h3><ul><li>When you scan a social link, the username is sent to a third-party avatar service (unavatar.io) to look up the public profile photo.</li><li>Fonts are loaded from Google Fonts.</li><li>The gift itself is contained in the link or file you choose to send. Anyone with the link can open it.</li></ul><h3>Your choices</h3><p>Don't scan a link if you don't want the username looked up. Remove any photo before sending.</p>`],
+  disclaimer: ['Disclaimer', `<p><b>Candlee is a tool for creating greetings. We are not responsible for any illegal, misleading, false, defamatory, offensive or infringing content created or shared with it.</b></p><p>Users are fully responsible for the content they create, the photos and personal details they use, and the people they send gifts to. Using someone's photos or profile without their permission, impersonating anyone, or using gifts for scams, deception or harassment is forbidden and may be illegal in your country.</p><p>Information pulled from social profiles comes from third-party services and public sources; we do not verify it and are not affiliated with Instagram, TikTok, X, Facebook, YouTube or any other platform. All trademarks belong to their owners.</p><p>Auto-written messages are suggestions. Check translations and wording before sending.</p>`],
+  cookies: ['Cookie policy', `<p>Candlee sets no tracking or advertising cookies. Google Fonts may receive your IP address when fonts load. The avatar lookup service may log the username you scan.</p>`],
+  contact: ['Contact', `<p>Questions, ideas or a language you'd like added? Write to us:</p><p><b style="user-select:all">hello@candlee.online</b></p>`],
+  report: ['Report abuse', `<p>If you received a Candlee gift that uses your photos without permission, impersonates someone, or is being used to deceive, email <b style="user-select:all">abuse@candlee.online</b> with the link.</p><p>Because gifts are stored in the link itself, the fastest fix is to ask the sender to stop sharing it. We cooperate with lawful requests from authorities.</p>`]
+};
+const dlg = $('#dlg');
+document.addEventListener('click', e => { const b = e.target.closest('[data-open]'); if (!b) return; e.preventDefault();
+  const [t, h] = PAGES[b.dataset.open]; $('#dlgT').textContent = t; $('#dlgB').innerHTML = h; dlg.showModal(); });
+$('#dlgX').onclick = () => dlg.close();
+dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+$('#yr').textContent = new Date().getFullYear();
+
+/* ---------- Boot ---------- */
+const EMBED = (() => { try { return window.top !== window; } catch(e){ return true; } })();
+if (EMBED) {
+  ['copyBtn','waBtn','dlBtn'].forEach(id => $('#' + id).hidden = true);
+  status('Preview version: play the surprise here. Sending links and gift files works on candlee.online.');
+}
+async function boot(){
+  let gift = window.__GIFT__ || null;
+  if (!gift && location.hash.startsWith('#g=')) { try { gift = await decode(location.hash.slice(3)); } catch(e){ gift = null; } }
+  if (gift) {
+    giftmode = true; document.body.classList.add('giftmode');
+    document.title = (pick((LMAP[gift.l]||LANGS[0]).hb, gift.g) + ' ' + (gift.n || '')).trim();
+    openGift(gift); return;
+  }
+  setForm(EXAMPLE); renderPreview();
+  heroTimer = setInterval(() => { ri = (ri + 1) % LANGS.length; showLang(ri); }, 2400);
+  showLang(0);
+}
+window.addEventListener('hashchange', () => { if (location.hash.startsWith('#g=')) location.reload(); });
+boot();
+})();
+</script>
+</body>
+</html>
