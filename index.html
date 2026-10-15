@@ -896,6 +896,9 @@ if (EMBED) {
 async function boot(){
   let gift = window.__GIFT__ || null;
   if (!gift && location.hash.startsWith('#g=')) { try { gift = await decode(location.hash.slice(3)); } catch(e){ gift = null; } }
+  if (!gift && /^#s=[\w-]{4,40}$/.test(location.hash)) { // short link: gift stored in gifts/<id>.txt next to this page
+    try { const r = await fetch('gifts/' + location.hash.slice(3) + '.txt', {cache:'no-store'}); if (r.ok) gift = await decode((await r.text()).trim()); } catch(e){ gift = null; }
+  }
   if (gift) {
     giftmode = true; document.body.classList.add('giftmode');
     document.title = (pick((LMAP[gift.l]||LANGS[0]).hb, gift.g) + ' ' + (gift.n || '')).trim();
@@ -905,7 +908,7 @@ async function boot(){
   heroTimer = setInterval(() => { ri = (ri + 1) % LANGS.length; showLang(ri); }, 2400);
   showLang(0);
 }
-window.addEventListener('hashchange', () => { if (location.hash.startsWith('#g=')) location.reload(); });
+window.addEventListener('hashchange', () => { if (/^#[gs]=/.test(location.hash)) location.reload(); });
 boot();
 })();
 </script>
